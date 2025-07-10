@@ -1,15 +1,15 @@
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { Award } from "lucide-react"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Award, Users, User } from "lucide-react"
 
 interface RecognitionItem {
   name: string
-  photo: string
+  type: "Individual" | "Team"
   recognition: string
-  type: "individual" | "team"
+  photo?: string
   teamMembers?: string[]
 }
 
@@ -18,53 +18,58 @@ interface RecognitionAwardsProps {
 }
 
 export function RecognitionAwards({ data }: RecognitionAwardsProps) {
+  const getInitials = (name: string) => {
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+  }
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {data.map((item, index) => (
-        <Card key={index} className="shadow-lg border-0 hover:shadow-xl transition-all duration-300">
-          <CardHeader className="text-center">
+        <Card key={index} className="shadow-lg border-0 hover:shadow-xl transition-all duration-300 group">
+          <CardHeader className="text-center pb-4">
             <div className="flex justify-center mb-4">
-              {item.type === "individual" ? (
-                <Avatar className="h-16 w-16">
-                  <AvatarImage src={item.photo || "/placeholder.svg"} alt={item.name} />
-                  <AvatarFallback>
-                    {item.name
-                      .split(" ")
-                      .map((n) => n[0])
-                      .join("")}
+              {item.type === "Individual" ? (
+                <Avatar className="h-16 w-16 border-4 border-emerald-200 group-hover:border-emerald-300 transition-colors">
+                  <AvatarImage src={item.photo || "/placeholder-user.jpg"} alt={item.name} />
+                  <AvatarFallback className="bg-emerald-100 text-emerald-700 font-semibold text-lg">
+                    {getInitials(item.name)}
                   </AvatarFallback>
                 </Avatar>
               ) : (
-                <div className="flex -space-x-2">
-                  {item.teamMembers?.slice(0, 3).map((member, memberIndex) => (
-                    <Avatar key={memberIndex} className="h-12 w-12 border-2 border-white">
-                      <AvatarFallback className="text-xs">
-                        {member
-                          .split(" ")
-                          .map((n) => n[0])
-                          .join("")}
-                      </AvatarFallback>
-                    </Avatar>
-                  ))}
-                  {item.teamMembers && item.teamMembers.length > 3 && (
-                    <Avatar className="h-12 w-12 border-2 border-white">
-                      <AvatarFallback className="text-xs">+{item.teamMembers.length - 3}</AvatarFallback>
-                    </Avatar>
-                  )}
+                <div className="h-16 w-16 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center border-4 border-purple-200 group-hover:border-purple-300 transition-colors">
+                  <Users className="h-8 w-8 text-white" />
                 </div>
               )}
             </div>
             <CardTitle className="text-lg font-semibold text-slate-800 dark:text-white">{item.name}</CardTitle>
-            <Badge variant="secondary" className="w-fit mx-auto">
-              <Award className="h-3 w-3 mr-1" />
-              {item.type === "individual" ? "Individual" : "Team"}
+            <Badge
+              variant={item.type === "Individual" ? "default" : "secondary"}
+              className={`w-fit mx-auto ${
+                item.type === "Individual"
+                  ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-200"
+                  : "bg-purple-100 text-purple-700 hover:bg-purple-200"
+              }`}
+            >
+              <div className="flex items-center space-x-1">
+                {item.type === "Individual" ? <User className="h-3 w-3" /> : <Users className="h-3 w-3" />}
+                <span>{item.type}</span>
+              </div>
             </Badge>
           </CardHeader>
           <CardContent className="text-center">
-            <p className="text-slate-600 dark:text-slate-300 text-sm">{item.recognition}</p>
-            {item.type === "team" && item.teamMembers && (
-              <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
-                <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">Team Members:</p>
+            <div className="flex justify-center mb-3">
+              <div className="p-2 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-500">
+                <Award className="h-5 w-5 text-white" />
+              </div>
+            </div>
+            <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed mb-4">{item.recognition}</p>
+            {item.teamMembers && (
+              <div className="border-t pt-4">
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mb-2">Team Members:</p>
                 <div className="flex flex-wrap gap-1 justify-center">
                   {item.teamMembers.map((member, memberIndex) => (
                     <Badge key={memberIndex} variant="outline" className="text-xs">
