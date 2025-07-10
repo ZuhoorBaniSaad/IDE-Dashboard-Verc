@@ -16,7 +16,7 @@ export const dashboardData = {
   digitalAmbition: [
     {
       programName: "Digital Transformation Initiative",
-      phase: "Phase 3",
+      phase: "POC",
       comments: "Implementation proceeding as planned with minor adjustments",
       status: "On Track",
     },
